@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:news/api/api_manager.dart';
-import 'package:news/model/SourceResponse.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news/di/sources_dependency_injection.dart';
 import 'package:news/model/category.dart';
-import 'package:news/ui/home/category%20details/category_details_view_model.dart';
+import 'package:news/ui/home/category%20details/cubit/category_details_cubit.dart';
+import 'package:news/ui/home/category%20details/cubit/category_details_state.dart';
 import 'package:news/ui/home/category%20details/sources/source_tab_widget.dart';
 import 'package:news/utils/app_colors.dart';
-import 'package:news/utils/app_styles.dart';
-import 'package:provider/provider.dart';
-
 class CategoryDetails extends StatefulWidget {
   CategoryDetails({super.key, required this.category});
 
@@ -18,7 +16,8 @@ class CategoryDetails extends StatefulWidget {
 }
 
 class _CategoryDetailsState extends State<CategoryDetails> {
-  CategoryDetailsViewModel viewModel = CategoryDetailsViewModel();
+  CategoryDetailsCubit viewModel = CategoryDetailsCubit(
+      sourcesRepositoryContract: injectSourcesRepo());
 
   @override
   void initState() {
@@ -29,7 +28,55 @@ class _CategoryDetailsState extends State<CategoryDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SourceResponse?>(
+    return BlocBuilder<CategoryDetailsCubit, CategoryDetailsState>(
+      bloc: viewModel,
+      builder: (context, state) {
+        //todo: handle loading
+        if (state is CategoryStateLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.greyColor),
+          );
+        }
+        //todo: handle error
+        else if (state is CategoryStateError) {
+          return Column(
+            children: [
+              Text(state.message,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .labelMedium,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.greyColor,
+                ),
+                onPressed: () {
+                  viewModel.getSources(widget.category.id);
+                  setState(() {});
+                },
+                child: Text(
+                  'try again',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .labelMedium,
+                ),
+              ),
+            ],
+          );
+        }
+        //todo: handle success
+        else if (state is CategoryStateSuccess) {
+          return SourceTabWidget(sourceList: state.sourceList);
+        }
+        return Container();
+      },);
+  }
+}
+
+
+/*FutureBuilder<SourceResponse?>(
       future: ApiManager.getSources(widget.category.id),
       builder: (context, snapshot) {
         //todo: loading
@@ -91,9 +138,9 @@ class _CategoryDetailsState extends State<CategoryDetails> {
         var sourceList = snapshot.data?.sources ?? [];
         return SourceTabWidget(sourceList: sourceList);
       },
-    );
-  }
-}
+    );*/
+
+
 
 /*ChangeNotifierProvider(
       create: (context) => viewModel,
