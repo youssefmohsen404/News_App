@@ -1,15 +1,17 @@
-import 'package:flutter/cupertino.dart';
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:news/l10n/app_localizations.dart';
 import 'package:news/provider/language_provider.dart';
 import 'package:news/provider/theme_provider.dart';
 import 'package:news/ui/home/home_screen.dart';
 import 'package:news/ui/search/search_screen.dart';
 import 'package:news/utils/app_routes.dart';
 import 'package:news/utils/app_theme.dart';
+import 'package:news/utils/cubit_observer.dart';
 import 'package:provider/provider.dart';
-import 'package:news/l10n/app_localizations.dart';
 
 void main() {
+  Bloc.observer = MyBlocObserver();
   runApp(
     MultiProvider(
       providers: [

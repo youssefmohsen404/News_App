@@ -1,13 +1,15 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:news/model/NewsResponse.dart';
+
 import '../model/SourceResponse.dart';
 import 'api_constants.dart';
 import 'api_endpoints.dart';
 
 //https://newsapi.org/v2/top-headlines/sources?apiKey=3aae3e834065453184ef24a867e9a5d5
 class ApiManager {
-  static Future<SourceResponse> getSources(String categoryId) async {
+  Future<SourceResponse> getSources(String categoryId) async {
     Uri url = Uri.https(ApiConstants.serverName, ApiEndPoints.apiName, {
       'apikey': ApiConstants.apiKey,
       'category': categoryId,
@@ -22,7 +24,7 @@ class ApiManager {
     }
   }
 
-  // https://newsapi.org/v2/everything?q=bitcoin&apiKey=3aae3e834065453184ef24a867e9a5d5
+  //todo: https://newsapi.org/v2/everything?q=bitcoin&apiKey=3aae3e834065453184ef24a867e9a5d5
   static Future<NewsResponse?> getNewsBySourceId(
     String sourceId,
     /*String title*/
@@ -46,6 +48,9 @@ class ApiManager {
   }
 
   static Future<NewsResponse?> giveNews() async {
+/*    Uri url = Uri.https()
+    http.post(url);*/
+
     Uri url = Uri.https(ApiConstants.serverName, ApiEndPoints.newsApi, {
       'apiKey': ApiConstants.apiKey,
       'q': "flutter",
